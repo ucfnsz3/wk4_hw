@@ -1,0 +1,106 @@
+---
+title: "wk4_hw"
+author: "ZHANG"
+date: "2022-11-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+LondonDataOSK<- read.csv("prac2_data/ward-profiles-excel-version.csv", 
+                         header = TRUE, 
+                         sep = ",",  
+                         encoding = "latin1")
+```
+
+```{r}
+library(readr)
+library(janitor)
+library(sf)
+```
+
+```{r}
+library(maptools)
+library(RColorBrewer)
+library(classInt)
+library(sp)
+library(rgeos)
+library(tmap)
+library(tmaptools)
+library(sf)
+library(rgdal)
+library(geojsonio)
+```
+
+```{r}
+gender_inequality <- read.csv("D:/UCL/CASA0005/03GIS/wk4/homework/HDR21-22_Composite_indices_complete_time_series.csv", 
+                         header = TRUE, 
+                         sep = ",",  
+                         encoding = "latin1")%>%
+na.omit()%>%
+clean_names()
+```
+
+```{r}
+World_Countries <- st_read("D:/UCL/CASA0005/03GIS/wk4/homework/World_Countries_(Generalized)/World_Countries__Generalized_.shp")%>%
+na.omit()%>%
+clean_names()
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+class(World_Countries)
+```
+```{r}
+library(dplyr)
+```
+
+```{r}
+gender_inequality_cols<-gender_inequality %>%
+  dplyr::select(c(iso3,country,gii_2010,gii_2019))
+
+gender_inequality_cols
+```
+
+```{r}
+gender_inequality_cols2 <- gender_inequality_cols %>%
+  mutate(diff=gii_2019-gii_2010)
+  
+gender_inequality_cols2
+```
+
+```{r}
+World_Countries2 <- World_Countries %>% 
+  left_join(., 
+            gender_inequality_cols2, 
+            by = c("country" = "country"))
+
+World_Countries2
+```
+
